@@ -1,6 +1,11 @@
-from flask import render_template, redirect
+from flask import render_template, redirect, url_for
 from app.dashboard import dashboard
 
 @dashboard.route('/')
 def dashboard_home():
-    return "Hey there"
+    
+    context = {
+        'title': 'Home',
+        
+    }
+    return render_template('dashboard/dashboard.html', **context)
