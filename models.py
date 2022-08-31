@@ -1,6 +1,10 @@
-from app import db, login_manager
+from app import db, login_manager, admin
+from flask import redirect, url_for, request, flash
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
+from flask_admin import AdminIndexView, BaseView, expose
+from flask_admin.contrib.sqla import ModelView
+
 
 # User loader function
 @login_manager.user_loader
@@ -36,3 +40,35 @@ class User(UserMixin, db.Model):
     
     def __repr__(self):
         return "<User %r>" %self.email
+ 
+# Create a Logout view
+class LogoutView(BaseView):
+    @expose('/')
+    def index(self):
+        return redirect(url_for('auth.logout'))
+    
+# Protect ModelView
+class MyModelView(ModelView):
+    
+    def is_accessible(self):
+        return current_user.is_authenticated
+    
+    def inaccessible_callback(self, name, **kwargs):
+        flash("Log in to access the page", 'warning')
+        return redirect(url_for('auth.login', next=request.url))
+
+
+# Create a login route for adminview
+class MyAdminIndexView(AdminIndexView):
+    
+    def is_accessible(self):
+        return current_user.is_authenticated
+    
+    
+    def inaccessible_callback(self, name, **kwargs):
+        flash("Log in to access page", 'warning')
+        return redirect(url_for('auth.login', next=request.url))
+
+# Register Views
+admin.add_view(MyModelView(User, db.session))
+admin.add_view(LogoutView(name="Logout", endpoint="logout"))

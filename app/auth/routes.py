@@ -17,7 +17,7 @@ def login():
             login_user(user, form.remember_me.data)
             # Get the next query parameter
             next = request.args.get('next')
-            if next is None or not next.startswith('/'):
+            if next is None:
                 next = url_for('dashboard.dashboard_home')
             return redirect(next)
         else:

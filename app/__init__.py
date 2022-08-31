@@ -2,10 +2,12 @@ from flask import Flask
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_admin import Admin
 
 # Create instance of packages
 db = SQLAlchemy()
 login_manager = LoginManager()
+admin = Admin()
 
 # Set login view and message
 login_manager.login_view = 'auth.login'
@@ -22,6 +24,9 @@ def create_app(config_name):
     # Initialize all instances
     db.init_app(app)
     login_manager.init_app(app)
+    
+    from models import MyAdminIndexView
+    admin.init_app(app, index_view=MyAdminIndexView())
     
     # Attach Blueprints
     from app.dashboard import dashboard as dashboard_blueprint
