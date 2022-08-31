@@ -8,6 +8,8 @@ from models import User
 # login route
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard.dashboard_home'))
     form = LoginForm()
     # Check for valid form submission
     if form.validate_on_submit():
@@ -33,6 +35,8 @@ def login():
 # register route
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard.dashboard_home'))
     form = RegisterForm()
     # Check for valid form submission and store data in db
     if form.validate_on_submit():

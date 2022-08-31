@@ -2,7 +2,7 @@ import os
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    
+    SANTA_ADMIN = os.environ.get('SANTA_ADMIN')
     
 
     @staticmethod
