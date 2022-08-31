@@ -1,0 +1,40 @@
+{% extends "auth/layout/auth_layout.html" %}
+{% from "auth/auth_macro.html" import auth_form %}
+{% block content %}
+<div class="card-body">
+    <form class="form-horizontal" id="loginform" method="POST">
+        {{ form.csrf_token }}
+        <h3 class="box-title m-b-20">Sign Up</h3>
+        {{ auth_form(form.username, placeholderValue="Username", required="") }}
+        {{ auth_form(form.email, placeholderValue="Email", required="") }}
+        {{ auth_form(form.password, placeholderValue="Password", required="") }}
+        {{ auth_form(form.confirm_password, placeholderValue="Confirm password", required="") }}
+
+        <div class="form-group row">
+            <div class="col-md-12">
+                <div class="checkbox checkbox-success">
+                    {{ form.terms(id="checkbox-signup") }}
+                    <label for="checkbox-signup"> I agree to all <a href="#">Terms</a></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group text-center m-t-20">
+            <div class="col-xs-12">
+                <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" 
+                    type="submit">Sign Up
+                </button>
+            </div>
+        </div>
+        <div class="form-group m-b-0">
+            <div class="col-sm-12 text-center">
+                <div>Already have an account? 
+                    <a href="{{ url_for('auth.login') }}" class="text-info m-l-5">
+                        <b>Sign In</b>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}

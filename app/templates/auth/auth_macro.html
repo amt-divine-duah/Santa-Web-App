@@ -1,0 +1,20 @@
+{% macro auth_form(fieldname, placeholderValue) %}
+<div class="form-group">
+    {% if fieldname.errors %}
+    <div class="form-group has-danger">
+        <div class="col-xs-12">
+            {{ fieldname(class="form-control form-control-danger", placeholder=placeholderValue, **kwargs) }}
+        </div>
+        <div class="form-control-feedback">
+            {% for error in fieldname.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-12">
+        {{ fieldname(class="form-control", placeholder=placeholderValue, **kwargs) }}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

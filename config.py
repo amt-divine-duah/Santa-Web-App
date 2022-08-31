@@ -11,7 +11,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    pass
+    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:pg1234@localhost/myprojectdb"
 
 class TestingConfig(Config):
     pass
