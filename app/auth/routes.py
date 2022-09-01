@@ -4,6 +4,7 @@ from app import db
 from app.auth import auth 
 from app.auth.forms import LoginForm, RegisterForm
 from models import User
+from app.auth.utils.emails import send_email
 
 # login route
 @auth.route('/login', methods=['GET', 'POST'])
@@ -49,6 +50,9 @@ def register():
         user = User(username=username, email=email, password=password, user_terms=user_terms)
         db.session.add(user)
         db.session.commit()
+        # Send confirmation email
+        send_email.delay(to=email, subject='Confirmation Email', template='auth/emails/confirm_email', 
+                        user=username)
         flash("Account registered successfully", "success")
         return redirect(url_for('auth.register'))
     

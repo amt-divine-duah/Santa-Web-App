@@ -2,7 +2,19 @@ import os
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    # Email Config
+    MAIL_PORT = 587
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     SANTA_ADMIN = os.environ.get('SANTA_ADMIN')
+    MAIL_SUBJECT_PREFIX = '[Santa-Blog]'
+    MAIL_SENDER = 'Santa-Blog Admin <sblog@gmail.com>'
+    
+    # Celery Config
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    
     
 
     @staticmethod

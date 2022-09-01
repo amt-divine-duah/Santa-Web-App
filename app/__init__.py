@@ -1,13 +1,18 @@
 from flask import Flask
-from config import config
+from config import config, Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
+from flask_mail import Mail
+from celery import Celery
 
 # Create instance of packages
 db = SQLAlchemy()
 login_manager = LoginManager()
 admin = Admin()
+mail = Mail()
+# Initialize Celery
+celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 
 # Set login view and message
 login_manager.login_view = 'auth.login'
@@ -24,6 +29,8 @@ def create_app(config_name):
     # Initialize all instances
     db.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
+    celery.conf.update(app.config)
     
     from models import MyAdminIndexView
     admin.init_app(app, index_view=MyAdminIndexView())
