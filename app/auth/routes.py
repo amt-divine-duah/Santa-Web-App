@@ -2,9 +2,9 @@ from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app import db
 from app.auth import auth 
-from app.auth.forms import LoginForm, RegisterForm
+from app.auth.forms import LoginForm, RecoverPasswordForm, RegisterForm, ResetPasswordForm
 from models import User
-from app.auth.utils.emails import send_email
+from app.auth.utils.emails import send_email 
 
 # login route
 @auth.route('/login', methods=['GET', 'POST'])
@@ -56,8 +56,7 @@ def register():
         send_email.delay(to=email, subject='Confirmation Email', template='auth/emails/confirm_email', 
                         user=username, token=token)
         flash("Account registered successfully", "success")
-        return redirect(url_for('auth.register'))
-    
+        return redirect(url_for('auth.login'))
     
     context = {
         'title': 'Register',
@@ -115,3 +114,55 @@ def resend_confirmation():
                template='auth/emails/confirm_email', user=current_user.username, token=token)
     flash("A new confirmation email has been sent to you by email", "success")
     return redirect(url_for('dashboard.dashboard_home'))
+
+# Password recover route
+@auth.route('/recover_password', methods=['GET', 'POST'])
+def recover_password():
+    
+    if not current_user.is_anonymous:
+        return redirect(url_for('dashboard.dashboard_home'))
+    
+    form = RecoverPasswordForm()
+    # Check for valid form submission
+    if form.validate_on_submit():
+        email = form.email.data
+        # Query for user
+        user = User.query.filter_by(email=email.lower()).first()
+        if user:
+            # Generate token and send email to user
+            token = user.generate_password_reset_token()
+            send_email.delay(to=user.email, subject='Reset Password', 
+                       template='auth/emails/reset_password', user=user.username, token=token)
+            flash("An email with instructions to reset password has been sent", "success")
+            return redirect(url_for('auth.login'))
+        else:
+            flash("Email address cannot be found. Please check and try again.", "danger")
+            return redirect(url_for('auth.recover_password'))
+    context = {
+        'title': 'Recover Password',
+        'form': form
+    }
+    return render_template('auth/recover_password.html', **context)
+
+# Password reset route
+@auth.route('/reset_password/<token>', methods=['GET', 'POST']) 
+def reset_password(token):
+    
+    if not current_user.is_anonymous:
+        return redirect(url_for('dashboard.dashboard_home'))
+    
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        new_password = form.password.data
+        if User.confirm_password_reset_token(token, new_password=new_password):
+            db.session.commit()
+            flash("Password reset completed successfully", "success")
+            return redirect(url_for('auth.login'))
+        else:
+            flash("Password reset could not be completed. Try again", "success")
+            return redirect(url_for('auth.login'))
+    context = {
+        'title': 'Reset Password',
+        'form': form
+    }
+    return render_template('auth/reset_password.html', **context)

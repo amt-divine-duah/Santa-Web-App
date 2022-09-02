@@ -3,6 +3,7 @@ from wtforms import StringField, EmailField, PasswordField, BooleanField
 from wtforms.validators import Email, EqualTo, ValidationError, DataRequired
 from models import User
 
+# Registration Form
 class RegisterForm(FlaskForm):
     username = StringField('Username')
     email = EmailField('Email')
@@ -23,9 +24,18 @@ class RegisterForm(FlaskForm):
         if user is not None:
             raise ValidationError("Email already exists. Choose a different one")
 
+# Login Form
 class LoginForm(FlaskForm):
     username = StringField('Username')
     password = StringField('Password')
     remember_me = BooleanField('Remember Me')
     
+# Recover Password Form
+class RecoverPasswordForm(FlaskForm):
+    email = EmailField('Email')
     
+# Password Reset Form
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password')
+    confirm_password = PasswordField('Confirm Pasword', 
+                                     validators=[EqualTo('password', message="Passwords must match")])

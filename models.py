@@ -137,16 +137,40 @@ class User(UserMixin, db.Model):
         try:
             data = jwt.decode(token, key=current_app.config['SECRET_KEY'],
                               leeway=timedelta(seconds=10), algorithms=['HS256'])
-            print(data)
         except Exception as e:
-            print(e)
             return False
         # If token key matches the current user id
         if data.get('confirm') != self.id:
-            print("I was here")
             return False
         self.confirmed = True
         db.session.add(self)
+        return True
+    
+    # Generate Password Reset Token
+    def generate_password_reset_token(self, expiration=1800):
+        reset_token = jwt.encode(payload={
+                                'reset_token': self.id, 
+                                'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=expiration)
+                                },
+                                 key=current_app.config['SECRET_KEY'], algorithm="HS256")
+        
+        return reset_token
+    
+    @staticmethod
+    def confirm_password_reset_token(token, new_password):
+        try:
+            data = jwt.decode(token, key=current_app.config['SECRET_KEY'], 
+                              leeway=timedelta(seconds=10), algorithms=["HS256"])
+        except Exception as e:
+            return False
+        # Get the user id
+        user_id = data.get('reset_token')
+        user = User.query.get(int(user_id))
+        if user is None:
+            return False
+        # Reset password
+        user.password = new_password
+        db.session.add(user)
         return True
     
     def __repr__(self):

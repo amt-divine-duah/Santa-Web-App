@@ -12,7 +12,7 @@ login_manager = LoginManager()
 admin = Admin()
 mail = Mail()
 # Initialize Celery
-celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
+celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, backend=Config.CELERY_RESULT_BACKEND)
 
 # Set login view and message
 login_manager.login_view = 'auth.login'
