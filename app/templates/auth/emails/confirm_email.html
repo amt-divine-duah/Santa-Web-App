@@ -1,1 +1,10 @@
-<p>Hhey there</p>
+<p>Dear {{ user }},</p>
+<p>Welcome to <b>Santa Blog</b>!</p>
+<p>To confirm your account please 
+    <a href="{{ url_for('auth.confirm_account', token=token) }}">click here</a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('auth.confirm_account', token=token) }}</p>
+<p>Sincerely,</p>
+<p>The Santa-Dev Team</p>
+<p><small>Note: replies to this email address are not monitored.</small></p>

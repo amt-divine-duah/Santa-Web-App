@@ -1,1 +1,17 @@
-Hey there
+Dear {{ user }},
+
+Welcome to Santa Blog!
+
+To confirm your account please click here:
+
+{{ url_for('auth.confirm_account', token=token) }}
+
+Alternatively, you can paste the following link in your browser's address bar:
+
+{{ url_for('auth.confirm_account', token=token) }}
+
+Sincerely,
+
+The Santa-Dev Team
+
+Note: replies to this email address are not monitored

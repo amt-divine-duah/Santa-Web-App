@@ -2,6 +2,8 @@ import os
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    SERVER_NAME = 'localhost:5000'
+    
     # Email Config
     MAIL_PORT = 587
     MAIL_SERVER = 'smtp.googlemail.com'
@@ -14,6 +16,7 @@ class Config:
     
     # Celery Config
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
     
     
 

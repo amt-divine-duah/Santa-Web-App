@@ -1,3 +1,5 @@
+import jwt
+from datetime import datetime, timedelta, timezone
 from app import db, login_manager, admin
 from flask import redirect, url_for, request, flash, current_app, abort
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -84,6 +86,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(85), nullable=False, unique=True)
     email = db.Column(db.String(120), nullable=False, unique=True)
     password_hash = db.Column(db.String(150))
+    confirmed = db.Column(db.Boolean, default=False)
     user_terms = db.Column(db.Boolean, default=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     
@@ -117,6 +120,34 @@ class User(UserMixin, db.Model):
     
     def is_administrator(self):
         return self.can(Permission.ADMIN)
+    
+    
+    # Generating Confirmation tokens
+    def generate_confirmation_token(self, expiration=1800):
+        confirmation_token = jwt.encode(payload={
+                                        'confirm': self.id,
+                                        'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=expiration)
+                                        }, 
+                                        key=current_app.config['SECRET_KEY'], algorithm="HS256")
+        
+        return confirmation_token
+    
+    # Confirm token
+    def confirm_token(self, token): 
+        try:
+            data = jwt.decode(token, key=current_app.config['SECRET_KEY'],
+                              leeway=timedelta(seconds=10), algorithms=['HS256'])
+            print(data)
+        except Exception as e:
+            print(e)
+            return False
+        # If token key matches the current user id
+        if data.get('confirm') != self.id:
+            print("I was here")
+            return False
+        self.confirmed = True
+        db.session.add(self)
+        return True
     
     def __repr__(self):
         return "<User %r>" %self.email

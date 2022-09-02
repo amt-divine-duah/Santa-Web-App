@@ -1,0 +1,54 @@
+{% extends "dashboard/layout/landingpage_layout.html" %}
+{% block content %}
+<div class="fix-width">
+    <div class="row banner-text justify-content-center">
+        <div class="col-md-8 m-t-20 text-center">
+            <!-- Flashed messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-rounded mb-2" style="margin: auto;"> 
+                <i class="ti-user"></i> 
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"> 
+                    <span aria-hidden="true">&times;</span> 
+                </button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <!-- End Flashed messages -->
+            <h1 style="color: #154a6c;"> Hello {{ current_user.username }}! <br>
+                Welcome to
+                <span style="color: #8fad55;">
+                    Santa Blog
+                </span>
+            </h1>
+            <p class="subtext">
+                <span class="font-medium">
+                    You have not confirmed your account yet. 
+                </span>
+                <span class="font-medium">
+                    To access the Management Dashboard you need to confirm your account. 
+                </span>
+                <span class="font-medium">
+                    Check your inbox, you should have received an email with a confirmation link.
+                </span>
+            </p>
+            
+            <p class="subtext">
+                <span class="font-medium">
+                    Need another confirmation link?
+                    <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+                </span>
+            </p>
+        </div>
+        <div class="col-md-12 text-center">
+            <div class="hero-banner">
+                <img src="{{ url_for('static', filename='landingpage/images/banner.jpg') }}" alt="Admin Press template"
+                    class="img-fluid" />
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

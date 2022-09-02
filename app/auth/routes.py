@@ -50,9 +50,11 @@ def register():
         user = User(username=username, email=email, password=password, user_terms=user_terms)
         db.session.add(user)
         db.session.commit()
+        # Generate token
+        token = user.generate_confirmation_token()
         # Send confirmation email
         send_email.delay(to=email, subject='Confirmation Email', template='auth/emails/confirm_email', 
-                        user=username)
+                        user=username, token=token)
         flash("Account registered successfully", "success")
         return redirect(url_for('auth.register'))
     
@@ -70,3 +72,46 @@ def logout():
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for('auth.login'))
+
+# Account confirmation route
+@auth.route('/confirm_account/<token>')
+@login_required
+def confirm_account(token):
+    if current_user.confirmed:
+        return redirect(url_for('dashboard.dashboard_home'))
+    if current_user.confirm_token(token):
+        db.session.commit()
+        flash("Account has been successfully confirmed.", "success")
+    else:
+        flash("The confirmation link is invalid or has expired", "danger")
+    return redirect(url_for('dashboard.dashboard_home'))
+
+# Filter unconfirmed accounts
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.blueprint != 'auth' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed_account'))
+    
+# Unconfirmed accounts
+@auth.route('/unconfirmed_account')
+def unconfirmed_account():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('dashboard.dashboard_home'))
+    
+    context = {
+        'title': 'Unconfirmed Account'
+    }
+    return render_template('auth/unconfirmed_account.html', **context)
+
+# Resend confirmation email
+@auth.route('/resend_confirmation')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    send_email.delay(to=current_user.email, subject='Confirm Your Account', 
+               template='auth/emails/confirm_email', user=current_user.username, token=token)
+    flash("A new confirmation email has been sent to you by email", "success")
+    return redirect(url_for('dashboard.dashboard_home'))

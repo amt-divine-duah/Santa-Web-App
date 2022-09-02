@@ -38,10 +38,12 @@ def create_app(config_name):
     # Attach Blueprints
     from app.dashboard import dashboard as dashboard_blueprint
     from app.auth import auth as auth_blueprint
+    from app.main import main as main_blueprint
     
     # Register Blueprints
     app.register_blueprint(dashboard_blueprint, url_prefix='/dashboard')
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(main_blueprint)
     
     
     return app
