@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, BooleanField
-from wtforms.validators import Email, EqualTo, ValidationError, DataRequired
+from wtforms.validators import EqualTo, ValidationError
 from models import User
 
 # Registration Form
@@ -39,3 +39,17 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField('New Password')
     confirm_password = PasswordField('Confirm Pasword', 
                                      validators=[EqualTo('password', message="Passwords must match")])
+    
+# Change Email form
+class ChangeEmailForm(FlaskForm):
+    old_email = EmailField('Old Email')
+    password = PasswordField('Password')
+    new_email = EmailField('New Email')
+    
+    def validate_old_email(self, field):
+        if User.query.filter_by(email=field.data).first() is None:
+            raise ValidationError("Email address cannot be found")
+    
+    def validate_new_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError("Email address has been already registered")

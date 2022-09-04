@@ -2,7 +2,7 @@ from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app import db
 from app.auth import auth 
-from app.auth.forms import LoginForm, RecoverPasswordForm, RegisterForm, ResetPasswordForm
+from app.auth.forms import ChangeEmailForm, LoginForm, RecoverPasswordForm, RegisterForm, ResetPasswordForm
 from models import User
 from app.auth.utils.emails import send_email 
 
@@ -166,3 +166,38 @@ def reset_password(token):
         'form': form
     }
     return render_template('auth/reset_password.html', **context)
+
+# Change Email route
+@auth.route('/change_email_request', methods=['GET', 'POST'])
+@login_required
+def change_email_request():
+    
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        # Check for valid password
+        if current_user.verify_password(form.password.data):
+            new_email = form.new_email.data
+            token = current_user.generate_email_change_token(new_email)
+            send_email.delay(to=new_email, subject='Confirm Your New Email Address', 
+                       template='auth/emails/change_email', user=current_user.username, token=token)
+            
+            flash('An email with instructions to confirm your new email \
+                    address has been sent to you.', "success")
+            return redirect(url_for('dashboard.dashboard_home'))
+        else:
+            flash("Invalid password or email", "danger")
+    context = {
+        'title': 'Change Email',
+        'form': form
+    }
+    return render_template('auth/change_email_request.html', **context)
+
+@auth.route('/confirm_new_email/<token>', methods=['GET', 'POST'])
+@login_required
+def confirm_new_email(token):
+    if current_user.change_email(token):
+        db.session.commit()
+        flash("Your email address has been updated", "success")
+    else:
+        flash("Invalid request. Try again", "danger")
+    return redirect(url_for('dashboard.dashboard_home'))

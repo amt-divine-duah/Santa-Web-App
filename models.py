@@ -173,6 +173,38 @@ class User(UserMixin, db.Model):
         db.session.add(user)
         return True
     
+    # Email change token
+    def generate_email_change_token(self, new_email, expiration=1800):
+        token = jwt.encode(payload={
+                                'email_token': self.id, 
+                                'new_email': new_email, 
+                                'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=expiration)
+                                },
+                                 key=current_app.config['SECRET_KEY'], algorithm="HS256")
+        
+        return token
+    
+    # Confirm token for email change
+    def change_email(self, token):
+        try:
+            data = jwt.decode(token, key=current_app.config['SECRET_KEY'], 
+                              leeway=timedelta(seconds=10), algorithms=["HS256"])
+        except Exception as e:
+            return False
+        if data.get('email_token') != self.id:
+            return False
+        # Get the new Email
+        new_email = data.get('new_email')
+        if new_email is None:
+            return False
+        # Check for existing email
+        if User.query.filter_by(email=new_email.lower()).first() is not None:
+            return False
+        # Add new email
+        self.email = new_email
+        db.session.add(self)
+        return True
+    
     def __repr__(self):
         return "<User %r>" %self.email
 

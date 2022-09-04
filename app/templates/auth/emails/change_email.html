@@ -1,0 +1,9 @@
+<p>Dear {{ user }},</p>
+<p>To confirm your new email address please 
+    <a href="{{ url_for('auth.confirm_new_email', token=token) }}">click here</a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('auth.confirm_new_email', token=token) }}</p>
+<p>Sincerely,</p>
+<p>The Santa-Dev Team</p>
+<p><small>Note: replies to this email address are not monitored.</small></p>

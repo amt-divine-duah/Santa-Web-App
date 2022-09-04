@@ -1,0 +1,15 @@
+Dear {{ user }},
+
+To confirm your new email address please click here:
+
+{{ url_for('auth.confirm_new_email', token=token) }}
+
+Alternatively, you can paste the following link in your browser's address bar:
+
+{{ url_for('auth.confirm_new_email', token=token) }}
+
+Sincerely,
+
+The Santa-Dev Team
+
+Note: replies to this email address are not monitored
