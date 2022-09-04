@@ -74,7 +74,7 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"> 
                                     <a class="dropdown-item" href="{{ url_for('auth.change_email_request') }}">Change Email</a>
-                                    <a class="dropdown-item" href="">Change Password</a>
+                                    <a class="dropdown-item" href="{{ url_for('auth.update_password') }}">Change Password</a>
                                     <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a>
                                 </div>
                             </li>

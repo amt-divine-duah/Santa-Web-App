@@ -272,6 +272,19 @@
                                 <li><a href="app-contact-detail.html">Contact Detail</a></li>
                             </ul>
                         </li>
+                        <li class="nav-devider"></li>
+                        <li class="nav-small-cap">EXTRAS</li>
+                        <li> 
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                                <i class="mdi mdi-settings"></i>
+                                <span class="hide-menu">Settings</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="#">Profile</a></li>
+                                <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
+                                <li><a href="{{ url_for('auth.update_password') }}">Update Password</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
@@ -294,8 +307,10 @@
                 </div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">{{ title }}</a></li>
-                        <li class="breadcrumb-item">pages</li>
+                        <li class="breadcrumb-item">
+                            <a href="javascript:void(0)">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">{{ submenu }}</li>
                         <li class="breadcrumb-item active">{{ title }}</li>
                     </ol>
                 </div>

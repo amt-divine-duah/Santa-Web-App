@@ -2,7 +2,7 @@ from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app import db
 from app.auth import auth 
-from app.auth.forms import ChangeEmailForm, LoginForm, RecoverPasswordForm, RegisterForm, ResetPasswordForm
+from app.auth.forms import ChangeEmailForm, LoginForm, RecoverPasswordForm, RegisterForm, ResetPasswordForm, UpdatePasswordForm
 from models import User
 from app.auth.utils.emails import send_email 
 
@@ -188,10 +188,12 @@ def change_email_request():
             flash("Invalid password or email", "danger")
     context = {
         'title': 'Change Email',
+        'submenu': 'Settings',
         'form': form
     }
     return render_template('auth/change_email_request.html', **context)
 
+# Confirm Email Adress changes
 @auth.route('/confirm_new_email/<token>', methods=['GET', 'POST'])
 @login_required
 def confirm_new_email(token):
@@ -201,3 +203,25 @@ def confirm_new_email(token):
     else:
         flash("Invalid request. Try again", "danger")
     return redirect(url_for('dashboard.dashboard_home'))
+
+@auth.route('/update_password', methods=['GET', 'POST'])
+@login_required
+def update_password():
+    
+    form = UpdatePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.new_password.data
+            db.session.add(current_user)
+            db.session.commit()
+            flash("Password updated successfully", "success")
+        else:
+            flash("Invalid password", "danger")
+        return redirect(url_for('auth.update_password'))
+    
+    context = {
+        'title': 'Update Password',
+        'submenu': 'Settings',
+        'form': form
+    }
+    return render_template('auth/update_password.html', **context)
