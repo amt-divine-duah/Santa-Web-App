@@ -1,0 +1,19 @@
+{% macro profile_forms(fieldname, placeholderValue) %}
+<div class="form-group">
+    {{ fieldname.label(class="col-md-12") }}
+    <div class="col-md-12">
+        {% if fieldname.errors %}
+        <div class="form-group has-danger">
+            {{ fieldname(class="form-control form-control-danger", placeholder=placeholderValue, **kwargs) }}
+            <div class="form-control-feedback">
+                {% for error in fieldname.errors %}
+                <span> {{ error }} </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        {{ fieldname(class="form-control", placeholder=placeholderValue, **kwargs) }}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}

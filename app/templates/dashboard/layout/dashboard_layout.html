@@ -17,6 +17,7 @@
     {% endif %}
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static', filename='dashboard/assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/assets/plugins/dropify/dist/css/dropify.min.css') }}">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='dashboard/css/style.css') }}" rel="stylesheet">
     <!-- You can change the theme colors from here -->
@@ -199,19 +200,27 @@
                         <!-- Profile -->
                         <!-- ============================================================== -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{ url_for('static', filename='dashboard/assets/images/users/1.jpg') }}" alt="user" class="profile-pic" /></a>
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img src="{{ url_for('static', filename='dashboard/profile_pics/' +current_user.image) }}" 
+                                    alt="user" class="profile-pic" />
+                            </a>
                             <div class="dropdown-menu dropdown-menu-right scale-up">
                                 <ul class="dropdown-user">
                                     <li>
                                         <div class="dw-user-box">
-                                            <div class="u-img"><img src="{{ url_for('static', filename='dashboard/assets/images/users/1.jpg') }}" alt="user"></div>
+                                            <div class="u-img">
+                                                <img src="{{ url_for('static', filename='dashboard/profile_pics/' +current_user.image) }}" 
+                                                alt="user">
+                                            </div>
                                             <div class="u-text">
                                                 <h4>Steave Jobs</h4>
-                                                <p class="text-muted">varun@gmail.com</p><a href="pages-profile.html" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
+                                                <p class="text-muted">{{ current_user.email }}</p>
+                                                <a href="{{ url_for('dashboard.profile') }}" class="btn btn-rounded btn-danger btn-sm">View Profile</a>
+                                            </div>
                                         </div>
                                     </li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="#"><i class="ti-user"></i> My Profile</a></li>
                                     <li><a href="#"><i class="ti-wallet"></i> My Balance</a></li>
                                     <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
                                     <li role="separator" class="divider"></li>
@@ -237,12 +246,13 @@
                 <!-- User profile -->
                 <div class="user-profile">
                     <!-- User profile image -->
-                    <div class="profile-img"> <img src="{{ url_for('static', filename='dashboard/assets/images/users/profile.png') }}" alt="user" /> 
+                    <div class="profile-img"> 
+                        <img src="{{ url_for('static', filename='dashboard/profile_pics/' +current_user.image) }}" alt="user" /> 
                              <!-- this is blinking heartbit-->
                             <div class="notify setpos"> <span class="heartbit"></span> <span class="point"></span> </div>
                     </div>
                     <!-- User profile text-->
-                    <div class="profile-text"> 
+                    <div class="profile-text">  
                             <h5>Markarn Doe</h5>
                             <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true"><i class="mdi mdi-settings"></i></a>
                              <a href="app-email.html" class="" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a>
@@ -280,7 +290,7 @@
                                 <span class="hide-menu">Settings</span>
                             </a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="#">Profile</a></li>
+                                <li><a href="{{ url_for('dashboard.profile') }}">Profile</a></li>
                                 <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
                                 <li><a href="{{ url_for('auth.update_password') }}">Update Password</a></li>
                             </ul>
@@ -446,6 +456,13 @@
     <!--Custom JavaScript -->
     <script src="{{ url_for('static', filename='dashboard/js/custom.min.js') }}"></script>
     <!-- ============================================================== -->
+    <!-- jQuery file upload -->
+    <script src="{{ url_for('static', filename='dashboard/assets/plugins/dropify/dist/js/dropify.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.dropify').dropify();
+        })
+    </script>
     <!-- Style switcher -->
     <!-- ============================================================== -->
     <script src="{{ url_for('static', filename='dashboard/assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>

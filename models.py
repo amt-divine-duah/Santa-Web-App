@@ -84,10 +84,19 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(85), nullable=False, unique=True)
+    first_name = db.Column(db.String(50))
+    middle_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
     email = db.Column(db.String(120), nullable=False, unique=True)
     password_hash = db.Column(db.String(150))
     confirmed = db.Column(db.Boolean, default=False)
     user_terms = db.Column(db.Boolean, default=False)
+    address = db.Column(db.Text)
+    job_title = db.Column(db.String(80))
+    bio = db.Column(db.Text)
+    mobile_no = db.Column(db.String(20))
+    country = db.Column(db.String(50))
+    image = db.Column(db.String(120), default='default.jpg')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     
     # Role Assignment
