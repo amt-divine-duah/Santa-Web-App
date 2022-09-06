@@ -12,3 +12,7 @@ class ProfileForm(FlaskForm):
     bio = TextAreaField('Bio')
     address = StringField('Address')
     job_title = StringField('Job Title')
+    
+class PostForm(FlaskForm):
+    title = StringField('Title')
+    body = TextAreaField('What\'s on your mind?')

@@ -1,0 +1,38 @@
+{% extends "dashboard/layout/dashboard_layout.html" %}
+{% from "dashboard/forms_macro.html" import dashboard_forms %}
+{% block content %}
+<!-- Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">View Posts</h4>
+                <h6 class="card-subtitle">My Blog Posts</h6>
+                <div class="table-responsive m-t-40">
+                    <table id="myTable" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Body</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in posts %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ post.title }}</td>
+                                <td>{{ post.body }}</td>
+                                <td>Action</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->
+{% endblock content %}

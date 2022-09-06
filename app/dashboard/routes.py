@@ -1,9 +1,9 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app import db
-from models import User
+from models import Post
 from app.dashboard import dashboard
-from app.dashboard.forms import ProfileForm
+from app.dashboard.forms import PostForm, ProfileForm
 from app.dashboard.utils import save_profile_image
 
 @dashboard.route('/')
@@ -68,3 +68,37 @@ def profile():
         'submenu': 'Settings'
     }
     return render_template('dashboard/profile.html', **context)
+
+# Post blog route
+@dashboard.route('/post_blog', methods=['GET', 'POST'])
+@login_required
+def post_blog():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, body=form.body.data, 
+                    author=current_user._get_current_object())
+        db.session.add(post)
+        db.session.commit()
+        flash("New blog post has been added successfully", "success")
+        return redirect(url_for('dashboard.post_blog'))
+    
+    context = {
+        'title': 'Post Blog',
+        'form': form,
+        'submenu': 'Blog'
+    }
+    return render_template('dashboard/post_blog.html', **context)
+
+# View Posts
+@dashboard.route('/view_posts')
+@login_required
+def view_posts():
+    
+    posts = Post.query.filter_by(author=current_user._get_current_object()).all()
+    
+    context = {
+        'title': 'View Posts',
+        'posts': posts,
+        'submenu': 'Blog'
+    }
+    return render_template('dashboard/view_posts.html', **context)

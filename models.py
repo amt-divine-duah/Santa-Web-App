@@ -98,6 +98,7 @@ class User(UserMixin, db.Model):
     country = db.Column(db.String(50))
     image = db.Column(db.String(120), default='default.jpg')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
     
     # Role Assignment
     def __init__(self, **kwargs):
@@ -265,8 +266,17 @@ class MyAdminIndexView(AdminIndexView):
             else:        
                 flash("Log in to access page", 'warning')
                 return redirect(url_for('auth.login', next=request.url))
+            
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 # Register Views
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(Role, db.session))
+admin.add_view(MyModelView(Post, db.session))
 admin.add_view(LogoutView(name="Logout", endpoint="logout"))
