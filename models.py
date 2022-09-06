@@ -274,6 +274,9 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    def __repr__(self):
+        return "<Post %r>" %self.title
 
 # Register Views
 admin.add_view(MyModelView(User, db.session))

@@ -14,6 +14,9 @@ class Config:
     MAIL_SUBJECT_PREFIX = '[Santa-Blog]'
     MAIL_SENDER = 'Santa-Blog Admin <sblog@gmail.com>'
     
+    # Posts per page
+    BLOG_POSTS_PER_PAGE = 9
+    
     # Celery Config
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
