@@ -99,6 +99,11 @@
                                             </li>
                                         </ul> -->
                                     </li>
+                                    {% if current_user.is_authenticated %}
+                                    <li><a href="{{ url_for('dashboard.dashboard_home') }}">Dashboard</a></li>
+                                    {% else %}
+                                    <li><a href="{{ url_for('dashboard.dashboard_home') }}">Portal</a></li>
+                                    {% endif %}
                                 </ul>
                             </nav>
                         </div>

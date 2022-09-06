@@ -6,13 +6,14 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">View Posts</h4>
-                <h6 class="card-subtitle">My Blog Posts</h6>
+                <h4 class="card-title">View All Posts</h4>
+                <h6 class="card-subtitle">All Blog Posts</h6>
                 <div class="table-responsive m-t-40">
                     <table id="myTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Author</th>
                                 <th>Title</th>
                                 <th>Body</th>
                                 <th class="text-nowrap">Action</th>
@@ -22,6 +23,7 @@
                             {% for post in posts %}
                             <tr>
                                 <td>{{ loop.index }}</td>
+                                <td>{{ post.author.username }}</td>
                                 <td>{{ post.title }}</td>
                                 <td>
                                     {% if post.body|length > 150 %}
@@ -31,7 +33,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="text-nowrap">
-                                    <a href="{{ url_for('dashboard.update_blog', blog_id=post.id) }}" 
+                                    <a href="{{ url_for('dashboard.admin_update_blog', blog_id=post.id) }}" 
                                         data-toggle="tooltip" data-original-title="Edit"> 
                                         <i class="fa fa-pencil text-inverse m-r-10"></i> 
                                     </a>
@@ -49,13 +51,17 @@
                                         </div>
                                         <div class="modal-body">
                                             <h4>Title: {{ post.title }}</h4>
-                                            <p>Are you sure you want to delete this post?</p>
+                                            <h4>Author: {{ post.author.username }}</h4>
+                                            <br>
+                                            <p>Are you sure you want to delete this post 
+                                                written by {{ post.author.username }}?
+                                            </p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-info waves-effect" 
                                                 data-dismiss="modal">Close
                                             </button>
-                                            <form action="{{ url_for('dashboard.delete_post', blog_id=post.id) }}" 
+                                            <form action="{{ url_for('dashboard.admin_delete_post', blog_id=post.id) }}" 
                                                 method="POST">
                                                 <button type="submit" class="btn btn-danger 
                                                     waves-effect">Delete

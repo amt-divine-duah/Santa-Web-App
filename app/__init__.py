@@ -6,6 +6,7 @@ from flask_admin import Admin
 from flask_mail import Mail
 from celery import Celery
 from flask_moment import Moment
+from flask_ckeditor import CKEditor
 
 # Create instance of packages
 db = SQLAlchemy()
@@ -13,6 +14,8 @@ login_manager = LoginManager()
 admin = Admin()
 mail = Mail()
 moment = Moment()
+ckeditor = CKEditor()
+
 # Initialize Celery
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, backend=Config.CELERY_RESULT_BACKEND)
 
@@ -33,6 +36,7 @@ def create_app(config_name):
     login_manager.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
+    ckeditor.init_app(app)
     celery.conf.update(app.config)
     
     from models import MyAdminIndexView

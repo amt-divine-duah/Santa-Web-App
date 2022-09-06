@@ -12,6 +12,7 @@
                         <div class="row p-t-20">
                             <div class="col-md-6">
                                 {{dashboard_forms(form.title, placeholder="Enter blog title", required="")}}
+                                {{dashboard_forms(form.author, placeholder="Author", required="", readonly=true)}}
                                 {{dashboard_forms(form.body, placeholder="", rows=5)}}
                             </div>
                         </div>

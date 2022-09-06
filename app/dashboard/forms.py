@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, TextAreaField
-from flask_wtf.file import FileField, FileAllowed
+from wtforms.validators import DataRequired
+from flask_ckeditor import CKEditorField
 
 class ProfileForm(FlaskForm):
     username = StringField('Username')
@@ -12,7 +13,14 @@ class ProfileForm(FlaskForm):
     bio = TextAreaField('Bio')
     address = StringField('Address')
     job_title = StringField('Job Title')
-    
+
+# Blog Post Form   
 class PostForm(FlaskForm):
     title = StringField('Title')
-    body = TextAreaField('What\'s on your mind?')
+    body = CKEditorField('What\'s on your mind?', validators=[DataRequired()])
+    
+# Admin Blog Post Form   
+class AdminPostForm(FlaskForm):
+    title = StringField('Title')
+    author = StringField('Author')
+    body = CKEditorField('Blog Details', validators=[DataRequired()])

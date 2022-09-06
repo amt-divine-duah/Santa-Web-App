@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from app import db
 from models import Post
 from app.dashboard import dashboard
-from app.dashboard.forms import PostForm, ProfileForm
+from app.auth.utils.decorators import admin_required
+from app.dashboard.forms import PostForm, ProfileForm, AdminPostForm
 from app.dashboard.utils import save_profile_image
 
 @dashboard.route('/')
@@ -138,3 +139,58 @@ def delete_post(blog_id):
         db.session.commit()
         flash("Post has been deleted", "info")
         return redirect(url_for('dashboard.view_posts'))
+
+# Manage blog posts
+@dashboard.route('/admin_view_posts')
+@login_required
+@admin_required
+def admin_view_posts():
+    
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    
+    context = {
+        'title': 'Admin View Posts',
+        'posts': posts,
+        'submenu': 'Settings'
+    }
+    return render_template('dashboard/admin_view_posts.html', **context)
+
+# Admin Update Blog Post
+@dashboard.route('/admin_update_blog/<int:blog_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def admin_update_blog(blog_id):
+    
+    form = AdminPostForm()
+    # Get the post
+    post = Post.query.filter_by(id=blog_id).first_or_404()
+    
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.author.username = form.author.data
+        post.body = form.body.data
+        db.session.commit()
+        flash("Blog post has been updated", "success")
+        return redirect(url_for('dashboard.admin_view_posts'))
+    
+    form.title.data = post.title
+    form.author.data = post.author.username
+    form.body.data = post.body
+    context = {
+        'title': 'Admin Update Blog',
+        'form': form,
+        'submenu': 'Settings',
+    }
+    return render_template('dashboard/admin_update_blog.html', **context)
+
+# Admin Delete Blog post
+@dashboard.route('/admin_delete_post<int:blog_id>', methods=['POST'])
+@login_required
+@admin_required
+def admin_delete_post(blog_id):
+    post = Post.query.filter_by(id=blog_id).first_or_404()
+    if request.method == "POST":
+        db.session.delete(post)
+        db.session.commit()
+        flash("Post has been deleted", "info")
+        return redirect(url_for('dashboard.admin_view_posts'))

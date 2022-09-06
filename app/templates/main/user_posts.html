@@ -38,7 +38,11 @@
                                 <span class="post-meta-comments"><a href=""><i class="fa fa-comments-o"></i>33
                                         Comments</a></span>
                                 <h2><a href="#">{{ post.title }}</a></h2>
-                                <p>{{ post.body }}</p>
+                                {% if post.body|length > 150 %}
+                                    <p>{{ post.body[:150]|safe }}...</p>
+                                {% else %}
+                                    <p>{{ post.body|safe }}</p>
+                                {% endif %}
                                 <a href="#" class="item-link">Read More <i class="icon-chevron-right"></i></a>
                                 <div class="post-author"> 
                                     <img src="{{ url_for('static', filename='dashboard/profile_pics/'+post.author.image) }}">

@@ -218,6 +218,17 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return "<User %r>" %self.email
 
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    def __repr__(self):
+        return "<Post %r>" %self.title
+
 # Anonymous class to check for Anonymous Permissions
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -266,17 +277,6 @@ class MyAdminIndexView(AdminIndexView):
             else:        
                 flash("Log in to access page", 'warning')
                 return redirect(url_for('auth.login', next=request.url))
-            
-class Post(db.Model):
-    __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
-    def __repr__(self):
-        return "<Post %r>" %self.title
 
 # Register Views
 admin.add_view(MyModelView(User, db.session))
