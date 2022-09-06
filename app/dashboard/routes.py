@@ -102,3 +102,39 @@ def view_posts():
         'submenu': 'Blog'
     }
     return render_template('dashboard/view_posts.html', **context)
+
+# Update Blog Post
+@dashboard.route('/update_blog/<int:blog_id>', methods=['GET', 'POST'])
+@login_required
+def update_blog(blog_id):
+    
+    form = PostForm()
+    # Get the post
+    post = Post.query.filter_by(id=blog_id).first_or_404()
+    
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.body = form.body.data
+        db.session.commit()
+        flash("Blog post has been updated", "success")
+        return redirect(url_for('dashboard.view_posts'))
+    
+    form.title.data = post.title
+    form.body.data = post.body
+    context = {
+        'title': 'Update Blog',
+        'form': form,
+        'submenu': 'Blog',
+    }
+    return render_template('dashboard/update_blog.html', **context)
+
+# Delete Blog post
+@dashboard.route('/delete_post<int:blog_id>', methods=['POST'])
+@login_required
+def delete_post(blog_id):
+    post = Post.query.filter_by(id=blog_id).first_or_404()
+    if request.method == "POST":
+        db.session.delete(post)
+        db.session.commit()
+        flash("Post has been deleted", "info")
+        return redirect(url_for('dashboard.view_posts'))
