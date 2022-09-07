@@ -1,0 +1,66 @@
+{% extends "main/layout/main_layout.html" %}
+{% block content %}
+<section id="page-content" class="no-sidebar">
+    <div class="container">
+        <!-- DataTable -->
+        {% if followers %}
+        <div class="row mb-3">
+            <div class="col-lg-6">
+                <h4>Followers</h4>
+                <p>Users following {{ user.username }}</p>
+            </div>
+            <div class="col-lg-6 text-end">
+                <a href="{{ url_for('main.following', username=user.username) }}" 
+                    class="btn btn-light"><i class="fa fa-users"></i> Following
+                </a>
+                <div id="export_buttons" class="mt-2"></div>
+            </div>
+        </div>
+        {% elif following %}
+        <div class="row mb-3">
+            <div class="col-lg-6">
+                <h4>Following</h4>
+                <p>Users Followed by {{ user.username }}</p>
+            </div>
+            <div class="col-lg-6 text-end">
+                <a href="{{ url_for('main.followers', username=user.username) }}" class="btn btn-light">
+                    <i class="fa fa-users"></i> Followers
+                </a>
+                <div id="export_buttons" class="mt-2"></div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-12">
+                <table id="datatable" class="table table-bordered table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Since</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for follow in follows %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>
+                                <a href="{{ url_for('main.user_profile', username=follow.user.username) }}">
+                                    <img src="{{ url_for('static', filename='dashboard/profile_pics/'+follow.user.image) }}" 
+                                        alt="image.jpg" style="border-radius: 50%; height:40px; width:40px;">
+                                    {{ follow.user.username }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ moment(follow.date_followed).format('L') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- end: DataTable -->
+    </div>
+</section>
+{% endblock content %}

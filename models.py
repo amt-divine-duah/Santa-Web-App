@@ -77,6 +77,12 @@ class Role(db.Model):
     def __repr__(self):
         return "<Role %r>" %self.name
 
+# Follows association table as a model
+class Follow(db.Model):
+    __tablename__ = "follows"
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    date_followed = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 # User Model
@@ -99,6 +105,12 @@ class User(UserMixin, db.Model):
     image = db.Column(db.String(120), default='default.jpg')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], 
+                               backref=db.backref('follower', lazy='joined'),
+                               lazy='dynamic', cascade='all, delete-orphan')
+    followers = db.relationship('Follow', foreign_keys=[Follow.followed_id],
+                               backref=db.backref('followed', lazy='joined'),
+                               lazy='dynamic', cascade='all, delete-orphan')
     
     # Role Assignment
     def __init__(self, **kwargs):
@@ -214,6 +226,32 @@ class User(UserMixin, db.Model):
         self.email = new_email
         db.session.add(self)
         return True
+    
+    """Followers helpers method"""
+    # Check whether a user is following another user
+    def is_following(self, user):
+        if user.id is None:
+            return False
+        return self.followed.filter_by(followed_id=user.id).first() is not None
+    
+    # Follow a user
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+            
+    # Unfollow a user
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+            
+    # Check for followers
+    def is_followed_by(self, user):
+        if user.id is None:
+            return False
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+    
     
     def __repr__(self):
         return "<User %r>" %self.email

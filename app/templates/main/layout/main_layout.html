@@ -15,6 +15,9 @@
 <!-- Stylesheets & Fonts -->
 <link href="{{ url_for('static', filename='main/css/plugins.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='main/css/style.css') }}" rel="stylesheet">
+<!-- DataTables css -->
+<link href="{{ url_for('static', filename='main/plugins/datatables/datatables.min.css') }}" 
+        rel='stylesheet' />
 <!-- Include moment library -->
 {{ moment.include_moment() }}
 </head>
@@ -200,6 +203,14 @@
     <script src="{{ url_for('static', filename='main/js/plugins.js') }}"></script>
     <!--Template functions-->
     <script src="{{ url_for('static', filename='main/js/functions.js') }}"></script>
+
+    <!--Datatables plugin files-->
+    <script src="{{ url_for('static', filename='main/plugins/datatables/datatables.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $("#datatable").DataTable();
+        })
+    </script>
 </body>
 
 </html>

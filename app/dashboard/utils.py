@@ -14,9 +14,10 @@ def save_profile_image(image):
     # Resize Image
     output_size = (300, 300)
     i = Image.open(image)
-    i.thumbnail(output_size)
+    rgb_img = i.convert('RGB')
+    rgb_img.thumbnail(output_size)
     # Save image
-    i.save(picture_path)
+    rgb_img.save(picture_path)
     
     return picture_fn
     

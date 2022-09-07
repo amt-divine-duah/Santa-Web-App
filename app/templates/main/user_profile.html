@@ -1,0 +1,97 @@
+{% extends "main/layout/main_layout.html" %}
+{% block content %}
+<section class="profile-content">
+    <div class="profile-image" style="background-image:url(/static/dashboard/profile_pics/{{user.image}})">
+        <div class="profile-name">
+            <h3>{{ user.username }}</h3>
+        </div>
+    </div>
+    <div class="profile-bio">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div role="alert" class="alert alert-{{category}} alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"> </button>
+                <strong><i class="fa fa-exclamation-circle"></i> 
+                    {{ category|title }}!
+                </strong> {{ message }}. 
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <h3>{{ user.username }}'s Profile</h3>
+        {% if user.job_title %}
+        <span>
+            {{ user.job_title }}
+        </span>
+        {% endif %}
+        <br/>
+        <p>
+            {{ user.bio }}
+        </p>
+        <div class="m-t-5">
+            <h4>Address</h4>
+            <span>{{ user.address }}</span>
+        </div>
+        <div class="m-t-10">
+            <h4>Blog Posts</h4>
+            <a href="{{ url_for('main.user_posts', username=user.username) }}">
+                <span class="badge bg-primary">{{ user.posts.count() }}</span>
+                <span>Blog Post(s)</span>
+            </a>
+            
+        </div>
+        <div class="m-t-30">
+            {% if current_user.can(Permission.FOLLOW) and user != current_user %}
+                {% if not current_user.is_following(user) %}
+                <a href="{{ url_for('main.follow', username=user.username) }}" 
+                    class="btn btn-rounded btn-outline">FOLLOW</a>
+                {% else %}
+                <a href="{{ url_for('main.unfollow', username=user.username) }}" 
+                    class="btn btn-rounded btn-outline">UNFOLLOW</a>
+                {% endif %}
+            {% endif %}
+            <a href="{{ url_for('main.followers', username=user.username) }}">
+                <span class="text-dark">FOLLOWERS:</span> 
+                <span class="badge badge-pill bg-warning">{{ user.followers.count() }}</span>
+            </a>
+            <a href="{{ url_for('main.following', username=user.username) }}">
+                <span class="text-dark">FOLLOWING:</span> 
+                <span class="badge badge-pill bg-light">{{ user.followed.count() }}</span>
+            </a>
+            {% if current_user.is_authenticated and user != current_user and 
+                user.is_following(current_user) %}
+            <span class="badge bg-success">Follows you</span>
+            {% endif %}
+        </div>
+        <div class="m-t-60">
+            <h4>Skills</h4>
+            <div class="p-progress-bar-container title-up small extra-small color">
+                <div class="p-progress-bar" data-percent="100" data-delay="100" data-type="%">
+                    <div class="progress-title">HTML5</div>
+                </div>
+            </div>
+            <div class="p-progress-bar-container title-up small extra-small color">
+                <div class="p-progress-bar" data-percent="94" data-delay="200" data-type="%">
+                    <div class="progress-title">CSS3</div>
+                </div>
+            </div>
+            <div class="p-progress-bar-container title-up small extra-small color">
+                <div class="p-progress-bar" data-percent="78" data-delay="300" data-type="%">
+                    <div class="progress-title">JQUERY</div>
+                </div>
+            </div>
+            <div class="p-progress-bar-container title-up small extra-small color">
+                <div class="p-progress-bar" data-percent="65" data-delay="400" data-type="%">
+                    <div class="progress-title">MYSQL</div>
+                </div>
+            </div>
+        </div>
+        <hr class="space">
+        <div class="profile-bio-footer">
+            <div class="text-center"> &copy; 2021 POLO - Responsive Multi-Purpose HTML5 Template. All Rights
+                Reserved.INSPIRO</div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
