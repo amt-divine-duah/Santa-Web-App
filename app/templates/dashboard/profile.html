@@ -230,6 +230,16 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-sm-12" for="header_image">
+                                    Header Image
+                                </label>
+                                <div class="col-sm-12">
+                                <input type="file" id="header_image" name="header_image" class="dropify" 
+                                    data-default-file="/static/dashboard/header_images/{{current_user.header}}"
+                                    data-max-file-size="2M" data-allowed-file-extensions="jpg jpeg png psd"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <div class="col-sm-12">
                                     <button type="submit" class="btn btn-success">Update Profile</button>
                                 </div>

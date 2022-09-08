@@ -5,7 +5,7 @@ from models import Post
 from app.dashboard import dashboard
 from app.auth.utils.decorators import admin_required
 from app.dashboard.forms import PostForm, ProfileForm, AdminPostForm
-from app.dashboard.utils import save_profile_image
+from app.dashboard.utils import save_profile_image, save_header_image
 
 @dashboard.route('/')
 @login_required
@@ -37,6 +37,9 @@ def profile():
         if request.files.get('profile_pic'):
             picture_file = save_profile_image(request.files.get('profile_pic'))
             current_user.image = picture_file 
+        if request.files.get('header_image'):
+            header_image = save_header_image(request.files.get('header_image'))
+            current_user.header = header_image 
         current_user.country =  request.form.get('country')
         current_user.username = form.username.data
         current_user.first_name = form.first_name.data

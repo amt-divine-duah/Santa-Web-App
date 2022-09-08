@@ -103,6 +103,7 @@ class User(UserMixin, db.Model):
     mobile_no = db.Column(db.String(20))
     country = db.Column(db.String(50))
     image = db.Column(db.String(120), default='default.jpg')
+    header = db.Column(db.String(120), default='header.jpg')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], 
@@ -320,4 +321,5 @@ class MyAdminIndexView(AdminIndexView):
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(Role, db.session))
 admin.add_view(MyModelView(Post, db.session))
+admin.add_view(MyModelView(Follow, db.session))
 admin.add_view(LogoutView(name="Logout", endpoint="logout"))
