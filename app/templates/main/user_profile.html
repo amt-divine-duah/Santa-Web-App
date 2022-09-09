@@ -53,11 +53,11 @@
             {% endif %}
             <a href="{{ url_for('main.followers', username=user.username) }}">
                 <span class="text-dark">FOLLOWERS:</span> 
-                <span class="badge badge-pill bg-warning">{{ user.followers.count() }}</span>
+                <span class="badge badge-pill bg-warning">{{ user.followers.count() - 1 }}</span>
             </a>
             <a href="{{ url_for('main.following', username=user.username) }}">
                 <span class="text-dark">FOLLOWING:</span> 
-                <span class="badge badge-pill bg-light">{{ user.followed.count() }}</span>
+                <span class="badge badge-pill bg-light">{{ user.followed.count() - 1 }}</span>
             </a>
             {% if current_user.is_authenticated and user != current_user and 
                 user.is_following(current_user) %}
