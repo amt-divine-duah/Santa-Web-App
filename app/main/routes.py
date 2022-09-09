@@ -1,4 +1,4 @@
-from flask import redirect, url_for, render_template, request, current_app, flash
+from flask import redirect, url_for, render_template, request, current_app, flash, make_response
 from app import db
 from app.main import main
 from flask_login import current_user, login_required
@@ -19,7 +19,15 @@ def home():
 def blog():
     
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).\
+    show_followed = False
+    
+    if current_user.is_authenticated:
+        show_followed = bool(request.cookies.get('show_followed', ''))
+    if show_followed:
+        query = current_user.followed_posts
+    else:
+        query = Post.query
+    pagination = query.order_by(Post.timestamp.desc()).\
                 paginate(page=page, per_page=current_app.config['BLOG_POSTS_PER_PAGE'])
     posts = pagination.items
     recent_posts = Post.query.order_by(Post.timestamp.desc()).all()
@@ -29,8 +37,26 @@ def blog():
         'posts': posts,
         'pagination': pagination,
         'recent_posts': recent_posts,
+        'show_followed':show_followed
     }
     return render_template('main/blog.html', **context)
+
+# Selection of all posts
+@main.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('main.blog')))
+    resp.set_cookie('show_followed', '', max_age=30*24*60*30)
+    return resp
+
+# Selection of followed posts
+@main.route('/followed')
+@login_required
+def show_followed():
+    resp = make_response(redirect(url_for('main.blog')))
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    return resp
+    
 
 # Get user posts
 @main.route('/user_posts/<username>')
