@@ -6,6 +6,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin, current_user, AnonymousUserMixin
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
+from sqlalchemy import event
+from slugify import slugify
 
 
 # User loader function
@@ -276,13 +278,22 @@ class User(UserMixin, db.Model):
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
+    title = db.Column(db.String(180))
+    slug = db.Column(db.String(180))
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
+    # Slugify posts
+    @staticmethod
+    def generate_slug(target, value, oldvalue, initiator):
+        if value and (not target.slug or value != oldvalue):
+            target.slug = slugify(value)
+    
     def __repr__(self):
         return "<Post %r>" %self.title
+
+db.event.listen(Post.title, 'set', Post.generate_slug, retval=False)
 
 # Anonymous class to check for Anonymous Permissions
 class AnonymousUser(AnonymousUserMixin):

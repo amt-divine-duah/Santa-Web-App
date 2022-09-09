@@ -37,13 +37,15 @@
                                 </span>
                                 <span class="post-meta-comments"><a href=""><i class="fa fa-comments-o"></i>33
                                         Comments</a></span>
-                                <h2><a href="#">{{ post.title }}</a></h2>
+                                <h2><a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug) }}">{{ post.title }}</a></h2>
                                 {% if post.body|length > 150 %}
                                     <p>{{ post.body[:150]|safe }}...</p>
                                 {% else %}
                                     <p>{{ post.body|safe }}</p>
                                 {% endif %}
-                                <a href="#" class="item-link">Read More <i class="icon-chevron-right"></i></a>
+                                <a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug) }}" 
+                                    class="item-link">Read More <i class="icon-chevron-right"></i>
+                                </a>
                                 <hr>
                                 <div> 
                                     <a href="{{ url_for('main.user_profile', username=post.author.username) }}" 
@@ -102,7 +104,7 @@
                         <div class="post-thumbnail-entry">
                             <img alt="" src="{{ url_for('static', filename='main/images/blog/thumbnail/5.jpg') }}">
                             <div class="post-thumbnail-content">
-                                <a href="#">{{ post.title }}</a>
+                                <a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug) }}">{{ post.title }}</a>
                                 <span class="post-date"><i class="icon-clock"></i> 
                                     {{ moment(post.timestamp).fromNow() }}
                                 </span>

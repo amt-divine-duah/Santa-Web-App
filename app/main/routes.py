@@ -166,5 +166,23 @@ def following(username):
     }
     return render_template('main/followers.html', **context)
 
+# View Blog Details
+@main.route('/blog/<int:blog_id>/<slug>', methods=['GET', 'POST'])
+def blog_details(blog_id, slug):
+    
+    post = Post.query.get_or_404(blog_id)
+    next_post = Post.query.order_by(Post.id.asc()).filter(Post.id > blog_id).first()
+    prev_post = Post.query.order_by(Post.id.desc()).filter(Post.id < blog_id).first()
+    recent_posts = Post.query.order_by(Post.timestamp.desc()).all()
+    
+    context = {
+        'title': f'{post.title}',
+        'post': post,
+        'next_post': next_post,
+        'prev_post': prev_post,
+        'recent_posts': recent_posts,
+    }
+    return render_template('main/blog_details.html', **context)
+
 
         
