@@ -35,8 +35,17 @@
                                     <i class="fa fa-calendar-o"></i>
                                     {{ post.timestamp.strftime('%b %d, %Y') }}
                                 </span>
-                                <span class="post-meta-comments"><a href=""><i class="fa fa-comments-o"></i>33
-                                        Comments</a></span>
+                                <span class="post-meta-comments">
+                                    <a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug, _anchor='comments') }}">
+                                        <i class="fa fa-comments-o"></i>
+                                        {{ post.comments.count() }} 
+                                        {% if post.comments.count() < 2 %}
+                                        Comment
+                                        {% else %}
+                                        Comments
+                                        {% endif %}
+                                    </a>
+                                </span>
                                 <h2><a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug) }}">{{ post.title }}</a></h2>
                                 {% if post.body|length > 150 %}
                                     <p>{{ post.body[:150]|safe }}...</p>

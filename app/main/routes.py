@@ -3,7 +3,8 @@ from app import db
 from app.main import main
 from flask_login import current_user, login_required
 from app.auth.utils.decorators import permission_required
-from models import Post, User, Permission
+from app.main.forms import CommentForm
+from models import Post, User, Permission, Comment
 
 # Homepage route
 @main.route('/')
@@ -170,10 +171,24 @@ def following(username):
 @main.route('/blog/<int:blog_id>/<slug>', methods=['GET', 'POST'])
 def blog_details(blog_id, slug):
     
+    form = CommentForm()
     post = Post.query.get_or_404(blog_id)
+    page = request.args.get('page', default=1, type=int)
+    
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data, author=current_user._get_current_object(), post=post)
+        db.session.add(comment)
+        db.session.commit()
+        flash("Your comment has been added", "success")
+        return redirect(url_for('main.blog_details', blog_id=post.id, slug=post.slug, _anchor='comments'))
+
     next_post = Post.query.order_by(Post.id.asc()).filter(Post.id > blog_id).first()
     prev_post = Post.query.order_by(Post.id.desc()).filter(Post.id < blog_id).first()
     recent_posts = Post.query.order_by(Post.timestamp.desc()).all()
+    pagination = post.comments.order_by(Comment.comment_date.desc()).\
+                paginate(page=page, per_page=current_app.config['COMMENTS_PER_PAGE'])
+    comments = pagination.items
+    
     
     context = {
         'title': f'{post.title}',
@@ -181,6 +196,9 @@ def blog_details(blog_id, slug):
         'next_post': next_post,
         'prev_post': prev_post,
         'recent_posts': recent_posts,
+        'form': form,
+        'comments':comments,
+        'pagination': pagination
     }
     return render_template('main/blog_details.html', **context)
 

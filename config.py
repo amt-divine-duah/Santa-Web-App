@@ -16,6 +16,7 @@ class Config:
     
     # Posts per page
     BLOG_POSTS_PER_PAGE = 9
+    COMMENTS_PER_PAGE = 3
     
     # Celery Config
     CELERY_BROKER_URL = 'redis://localhost:6379/0'

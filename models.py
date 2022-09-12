@@ -1,3 +1,4 @@
+from distutils.log import DEBUG
 import jwt
 from datetime import datetime, timedelta, timezone
 from app import db, login_manager, admin
@@ -114,6 +115,7 @@ class User(UserMixin, db.Model):
     followers = db.relationship('Follow', foreign_keys=[Follow.followed_id],
                                backref=db.backref('followed', lazy='joined'),
                                lazy='dynamic', cascade='all, delete-orphan')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
     
     # Role Assignment
     def __init__(self, **kwargs):
@@ -282,6 +284,7 @@ class Post(db.Model):
     slug = db.Column(db.String(180))
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     # Slugify posts
@@ -294,6 +297,16 @@ class Post(db.Model):
         return "<Post %r>" %self.title
 
 db.event.listen(Post.title, 'set', Post.generate_slug, retval=False)
+
+# Comments model
+class Comment(db.Model):
+    __tablename__ = "comments" 
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    comment_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 # Anonymous class to check for Anonymous Permissions
 class AnonymousUser(AnonymousUserMixin):
