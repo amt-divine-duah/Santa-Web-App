@@ -3,7 +3,7 @@ import os
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SERVER_NAME = 'localhost:5000'
-    
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     # Email Config
     MAIL_PORT = 587
     MAIL_SERVER = 'smtp.googlemail.com'
@@ -33,7 +33,8 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://postgres:pg1234@localhost/myprojectdb"
 
 class TestingConfig(Config):
-    pass
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite://'
 
 class ProductionConfig(Config):
     pass
