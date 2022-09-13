@@ -202,5 +202,28 @@ def blog_details(blog_id, slug):
     }
     return render_template('main/blog_details.html', **context)
 
+# Moderate(Enable) comments made by users
+@main.route('/moderate/enable/<int:comment_id>')
+@login_required
+@permission_required(Permission.MODERATE)
+def moderate_enable(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    comment.disabled = False
+    db.session.commit()
+    flash('Comment enabled successfully', 'info')
+    return redirect(url_for('main.blog_details', blog_id=comment.post.id, 
+                            slug=comment.post.slug, _anchor='comments'))
+    
+# Moderate(Disable) comments made by users
+@main.route('/moderate/disable/<int:comment_id>')
+@login_required
+@permission_required(Permission.MODERATE)
+def moderate_disable(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    comment.disabled = True
+    db.session.commit()
+    flash('Comment disabled', 'warning')
+    return redirect(url_for('main.blog_details', blog_id=comment.post.id, 
+                            slug=comment.post.slug, _anchor='comments'))
 
         

@@ -110,6 +110,19 @@
                                             <img alt="" src="{{ url_for('static', filename='dashboard/profile_pics/'+comment.author.image) }}" 
                                                 class="avatar">
                                         </div>
+                                        {% if comment.disabled and not current_user.can(Permission.MODERATE) %}
+                                        <div class="text">
+                                            <h5 class="name">{{ comment.author.username }}</h5>
+                                            <span class="comment_date">
+                                                Posted at {{ comment.comment_date.strftime('%H:%M%p') }}, 
+                                                {{ comment.comment_date.strftime('%d %B') }}
+                                            </span>
+                                            <a class="comment-reply-link" href="#">Reply</a>
+                                            <div class="text_holder">
+                                                <p>This comment has been disabled</p>
+                                            </div>
+                                        </div>
+                                        {% else %}
                                         <div class="text">
                                             <h5 class="name">{{ comment.author.username }}</h5>
                                             <span class="comment_date">
@@ -121,6 +134,16 @@
                                                 <p>{{ comment.body|safe }}</p>
                                             </div>
                                         </div>
+                                        {% if current_user.can(Permission.MODERATE) %}
+                                        {% if comment.disabled %}
+                                        <a href="{{ url_for('main.moderate_enable', comment_id=comment.id) }}" 
+                                            class="btn btn-light m-t-10">ENABLE</a>
+                                        {% else%}
+                                        <a href="{{ url_for('main.moderate_disable', comment_id=comment.id) }}" 
+                                            class="btn btn-danger m-t-10">DISABLE</a>
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endif %}
                                         <!-- Comment -->
                                         <!-- <div class="comment" id="comment-1-1">
                                             <div class="image"><img alt="" src="images/blog/author2.jpg" class="avatar">
