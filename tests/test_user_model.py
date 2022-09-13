@@ -67,3 +67,21 @@ class UserModelTestCase(unittest.TestCase):
         # sleep for 15 secs because of leeway of 10s in jwt
         time.sleep(15)
         self.assertFalse(u.confirm_token(token))
+        
+    # valid password reset toke
+    def test_valid_password_reset_token(self):
+        u = User(password='cat', username='abc', email='abc@email.com')
+        db.session.add(u)
+        db.session.commit()
+        token = u.generate_password_reset_token()
+        self.assertTrue(u.confirm_password_reset_token(token, 'dog'))
+        self.assertTrue(u.verify_password('dog'))
+    
+    def test_invalid_password_reset_token(self):
+        u = User(password='cat', username='abc', email='abc@email.com')
+        db.session.add(u)
+        db.session.commit()
+        token = u.generate_password_reset_token()
+        self.assertFalse(u.confirm_password_reset_token(token + 'a', 'horse'))
+        self.assertTrue(u.verify_password('cat'))
+        
