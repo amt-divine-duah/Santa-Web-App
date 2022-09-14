@@ -1,4 +1,3 @@
-from distutils.log import DEBUG
 import jwt
 from datetime import datetime, timedelta, timezone
 from app import db, login_manager, admin
@@ -9,6 +8,8 @@ from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import event
 from slugify import slugify
+from app.exceptions import ValidationError
+import bleach
 
 
 # User loader function
@@ -235,6 +236,25 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
     
+    # token based authentication support
+    def generate_auth_token(self, expiration):
+        token = jwt.encode(payload={
+            'token_id': self.id,
+            'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=expiration)
+        },
+        key=current_app.config['SECRET_KEY'], algorithm="HS256")
+        
+        return token
+    
+    @staticmethod
+    def verify_auth_token(token):
+        try:
+            data = jwt.decode(jwt=token, key=current_app.config['SECRET_KEY'], 
+                              algorithms=["HS256"])
+        except Exception as e:
+            return None
+        return User.query.get(data.get('token_id'))
+    
     """Followers helpers method"""
     # Check whether a user is following another user
     def is_following(self, user):
@@ -274,6 +294,18 @@ class User(UserMixin, db.Model):
                 db.session.add(user)
                 db.session.commit()
     
+    # Convert a user to a serializable dictionary
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_user', id=self.id),
+            'username': self.username,
+            'posts_url': url_for('api.get_posts', id=self.id),
+            'followed_posts_url': url_for('api.get_user_followed_posts', id=self.id),
+            'post_count': self.posts.count()
+        }
+        
+        return json_user
+    
     def __repr__(self):
         return "<User %r>" %self.email
 
@@ -283,6 +315,7 @@ class Post(db.Model):
     title = db.Column(db.String(180))
     slug = db.Column(db.String(180))
     body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -293,10 +326,40 @@ class Post(db.Model):
         if value and (not target.slug or value != oldvalue):
             target.slug = slugify(value)
     
+    # Converting post to json serializable dictionary
+    def to_json(self):
+        json_post = {
+            'url': url_for('api.get_post', id=self.id),
+            'body': self.body,
+            'slug': self.slug,
+            'timestamp': self.timestamp,
+            'author_url': url_for('api.get_user', id=self.author_id),
+            'comments_url': url_for('api.get_post_comments', id=self.id),
+            'comment_count': self.comments.count()
+        }
+        
+        return json_post
+    
+    # Creating a blog post from a json (deserialization)
+    @staticmethod
+    def from_json(json_post):
+        title = json_post.get('title')
+        body = json_post.get('body')
+        if (body is None or body == "") or (title is None or title == ""):
+            raise ValidationError('post does have a body or title')
+        return Post(title=title, body=body)
+    
+    # Cleaning HTML posts
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        target.body = bleach.linkify(bleach.clean(value, strip=True))
+        
+    
     def __repr__(self):
         return "<Post %r>" %self.title
 
 db.event.listen(Post.title, 'set', Post.generate_slug, retval=False)
+db.event.listen(Post.body_html, 'set', Post.on_changed_body, retval=False)
 
 # Comments model
 class Comment(db.Model):

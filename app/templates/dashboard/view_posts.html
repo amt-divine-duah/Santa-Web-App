@@ -24,10 +24,10 @@
                                 <td>{{ loop.index }}</td>
                                 <td>{{ post.title }}</td>
                                 <td>
-                                    {% if post.body|length > 150 %}
-                                    {{ post.body[:150]|safe }}...
+                                    {% if post.body_html|length > 150 %}
+                                    {{ post.body_html[:150]|safe }}...
                                     {% else %}
-                                    {{ post.body|safe }}
+                                    {{ post.body_html|safe }}
                                     {% endif %}
                                 </td>
                                 <td class="text-nowrap">

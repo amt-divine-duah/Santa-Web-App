@@ -68,7 +68,7 @@ class UserModelTestCase(unittest.TestCase):
         time.sleep(15)
         self.assertFalse(u.confirm_token(token))
         
-    # valid password reset toke
+    # valid password reset token
     def test_valid_password_reset_token(self):
         u = User(password='cat', username='abc', email='abc@email.com')
         db.session.add(u)
@@ -76,7 +76,8 @@ class UserModelTestCase(unittest.TestCase):
         token = u.generate_password_reset_token()
         self.assertTrue(u.confirm_password_reset_token(token, 'dog'))
         self.assertTrue(u.verify_password('dog'))
-    
+        
+    # Invalid password reset token
     def test_invalid_password_reset_token(self):
         u = User(password='cat', username='abc', email='abc@email.com')
         db.session.add(u)

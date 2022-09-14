@@ -47,10 +47,10 @@
                                     </a>
                                 </span>
                                 <h2><a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug) }}">{{ post.title }}</a></h2>
-                                {% if post.body|length > 150 %}
-                                    <p>{{ post.body[:150]|safe }}...</p>
+                                {% if post.body_html|length > 150 %}
+                                    <p>{{ post.body_html[:150]|safe }}...</p>
                                 {% else %}
-                                    <p>{{ post.body|safe }}</p>
+                                    <p>{{ post.body_html|safe }}</p>
                                 {% endif %}
                                 <a href="{{ url_for('main.blog_details', blog_id=post.id, slug=post.slug) }}" 
                                     class="item-link">Read More <i class="icon-chevron-right"></i>

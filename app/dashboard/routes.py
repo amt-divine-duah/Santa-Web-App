@@ -79,7 +79,7 @@ def profile():
 def post_blog():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, body=form.body.data, 
+        post = Post(title=form.title.data, body_html=form.body.data, 
                     author=current_user._get_current_object())
         db.session.add(post)
         db.session.commit()
@@ -118,13 +118,13 @@ def update_blog(blog_id):
     
     if form.validate_on_submit():
         post.title = form.title.data
-        post.body = form.body.data
+        post.body_html = form.body.data
         db.session.commit()
         flash("Blog post has been updated", "success")
         return redirect(url_for('dashboard.view_posts'))
     
     form.title.data = post.title
-    form.body.data = post.body
+    form.body.data = post.body_html
     context = {
         'title': 'Update Blog',
         'form': form,
@@ -171,14 +171,14 @@ def admin_update_blog(blog_id):
     if form.validate_on_submit():
         post.title = form.title.data
         post.author.username = form.author.data
-        post.body = form.body.data
+        post.body_html = form.body.data
         db.session.commit()
         flash("Blog post has been updated", "success")
         return redirect(url_for('dashboard.admin_view_posts'))
     
     form.title.data = post.title
     form.author.data = post.author.username
-    form.body.data = post.body
+    form.body.data = post.body_html
     context = {
         'title': 'Admin Update Blog',
         'form': form,

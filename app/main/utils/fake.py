@@ -25,7 +25,7 @@ def create_posts(count=25):
     user_count = User.query.count()
     for i in range(count):
         user = User.query.offset(randint(0, user_count-1)).first()
-        post = Post(title=fake.name(), body=fake.text(), 
+        post = Post(title=fake.name(), body_html=fake.text(), 
                     timestamp=fake.past_date(), author=user)
         db.session.add(post)
     db.session.commit()
