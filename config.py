@@ -4,6 +4,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SERVER_NAME = 'localhost:5000'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
     # Email Config
     MAIL_PORT = 587
     MAIL_SERVER = 'smtp.googlemail.com'
@@ -13,6 +14,9 @@ class Config:
     SANTA_ADMIN = os.environ.get('SANTA_ADMIN')
     MAIL_SUBJECT_PREFIX = '[Santa-Blog]'
     MAIL_SENDER = 'Santa-Blog Admin <sblog@gmail.com>'
+    
+    # Babel
+    LANGUAGES = ['en','es', 'de', 'fr']
     
     # Posts per page
     BLOG_POSTS_PER_PAGE = 9

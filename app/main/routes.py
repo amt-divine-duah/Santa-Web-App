@@ -1,10 +1,15 @@
-from flask import redirect, url_for, render_template, request, current_app, flash, make_response
+from flask import redirect, url_for, render_template, request, current_app, flash, make_response, g
 from app import db
 from app.main import main
 from flask_login import current_user, login_required
 from app.auth.utils.decorators import permission_required
 from app.main.forms import CommentForm
 from models import Post, User, Permission, Comment
+from flask_babel import get_locale
+
+@main.before_request
+def before_request():
+    g.locale = str(get_locale())
 
 # Homepage route
 @main.route('/')

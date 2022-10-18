@@ -31,7 +31,7 @@ def get_posts():
 @api.route('/posts/<int:id>')
 def get_post(id):
     post = Post.query.get_or_404(id)
-    return jsonify(post.to_json)
+    return jsonify(post.to_json())
 
 # insert a post into the database
 @api.route('/posts/', methods=['POST'])

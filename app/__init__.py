@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, g, request, current_app
 from config import config, Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -7,6 +7,7 @@ from flask_mail import Mail
 from celery import Celery
 from flask_moment import Moment
 from flask_ckeditor import CKEditor
+from flask_babel import Babel
 
 # Create instance of packages
 db = SQLAlchemy()
@@ -15,6 +16,8 @@ admin = Admin()
 mail = Mail()
 moment = Moment()
 ckeditor = CKEditor()
+babel = Babel()
+
 
 # Initialize Celery
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, backend=Config.CELERY_RESULT_BACKEND)
@@ -37,6 +40,7 @@ def create_app(config_name):
     mail.init_app(app)
     moment.init_app(app)
     ckeditor.init_app(app)
+    babel.init_app(app)
     celery.conf.update(app.config)
     
     from models import MyAdminIndexView
@@ -58,3 +62,8 @@ def create_app(config_name):
     
     
     return app
+
+@babel.localeselector
+def get_locale():
+    return 'es'
+

@@ -5,6 +5,7 @@ from app.auth import auth
 from app.auth.forms import ChangeEmailForm, LoginForm, RecoverPasswordForm, RegisterForm, ResetPasswordForm, UpdatePasswordForm
 from models import User
 from app.auth.utils.emails import send_email 
+from flask_babel import _
 
 # login route
 @auth.route('/login', methods=['GET', 'POST'])
@@ -28,7 +29,7 @@ def login():
             return redirect(url_for('auth.login'))
     
     context = {
-        'title': 'Login',
+        'title': _('Login'),
         'form': form,
     }
     return render_template('auth/login.html', **context)
