@@ -3228,7 +3228,7 @@ var INSPIRO = {},
                             twitterLoadingText =
                             elem.attr("data-loading-text") || "Loading...",
                             twitterApiPAth =
-                            elem.attr("data-loader") || "include/twitter/tweet.php",
+                            elem.attr("data-loader") || "",
                             twitterAvatar = elem.attr("data-avatar") || false;
                         if (twitterAvatar == "true") {
                             twitterAvatar = "{{avatar}}";

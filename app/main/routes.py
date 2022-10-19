@@ -1,14 +1,24 @@
-from flask import redirect, url_for, render_template, request, current_app, flash, make_response, g
+from flask import (redirect, url_for, render_template, request, current_app, 
+                   flash, make_response, g, session, abort)
 from app import db
 from app.main import main
 from flask_login import current_user, login_required
 from app.auth.utils.decorators import permission_required
 from app.main.forms import CommentForm
 from models import Post, User, Permission, Comment
-from flask_babel import get_locale
+from flask_babel import get_locale, refresh
 
 @main.before_request
 def before_request():
+    if session['lang_code'] not in current_app.config['LANGUAGES']:
+        adapter = current_app.url_map.bind('')
+        try:
+            endpoint, args = adapter.match('/en' + request.full_path.rstrip('/ ?'))
+            return redirect(url_for(endpoint, **args), 301)
+        except:
+            abort(404)
+    if session['lang_code'] not in current_app.config['LANGUAGES']:
+        abort(404)
     g.locale = str(get_locale())
 
 # Homepage route
@@ -18,6 +28,7 @@ def home():
     context = {
         'title': 'Blog Page'
     }
+    session['lang_code'] = request.accept_languages.best_match(current_app.config['LANGUAGES'])
     return render_template('main/index.html', **context)
 
 # Blog page

@@ -1,4 +1,4 @@
-from flask import Flask, g, request, current_app
+from flask import Flask, request, current_app, session
 from config import config, Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -56,7 +56,7 @@ def create_app(config_name):
     # Register Blueprints
     app.register_blueprint(dashboard_blueprint, url_prefix='/dashboard')
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
-    app.register_blueprint(main_blueprint)
+    app.register_blueprint(main_blueprint, url_prefix='/<lang_code>')
     app.register_blueprint(errors_blueprint)
     app.register_blueprint(api_blueprint, url_prefix='/api/v1')
     
@@ -65,5 +65,8 @@ def create_app(config_name):
 
 @babel.localeselector
 def get_locale():
-    return 'es'
+    if not session.get('lang_code', None):
+        session['lang_code'] = request.accept_languages.best_match(current_app.config['LANGUAGES'])
+    return session['lang_code']
+
 
